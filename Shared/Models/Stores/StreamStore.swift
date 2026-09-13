@@ -103,6 +103,20 @@ final class StreamStore: FetchingObject {
                     ).data ?? []
                     streams += twitchStreams
                 }
+
+                // The user doesn't follow their own channel, so fetch it separately in
+                // order to include their own stream when live.
+                if let twitchUserID {
+                    let ownStreams = try await twitchAPI?.executeFetchAll(
+                        method: .get,
+                        endpoint: "streams",
+                        query: [
+                            "user_id": [twitchUserID],
+                        ],
+                        decoding: [Stream].self
+                    ).data ?? []
+                    streams += ownStreams
+                }
             } catch {
 				Logger.twitch.error("Fetching all Twitch followed channels failed. \(error.localizedDescription)")
             }
