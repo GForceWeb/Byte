@@ -84,6 +84,9 @@ struct StreamControlsOverlay: View {
 
 			HStack(alignment: .center, spacing: 16) {
 				metadataLabel(stream.duration, systemImage: "dot.radiowaves.left.and.right")
+				if let viewerCount = stream.viewerCount {
+					metadataLabel(Self.viewerCountFormatter.string(from: NSNumber(integerLiteral: viewerCount)) ?? "\(viewerCount)", systemImage: "eye")
+				}
 				if streamQualities.isEmpty == false {
 					let quality = selectedQuality ?? streamQualities.first!
 					contextButton(quality.label, systemImage: "display", control: .changeQuality) {
@@ -138,6 +141,12 @@ struct StreamControlsOverlay: View {
 			}
 		}
 	}
+
+	private static let viewerCountFormatter: NumberFormatter = {
+		let formatter = NumberFormatter()
+		formatter.numberStyle = .decimal
+		return formatter
+	}()
 
 	private func metadataLabel(_ title: String, systemImage: String) -> some View {
 		Label(title, systemImage: systemImage)
