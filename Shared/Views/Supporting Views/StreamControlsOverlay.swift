@@ -13,6 +13,8 @@ struct StreamControlsOverlay: View {
 		case addStream
 		case toggleVideo
 		case toggleFlip
+		case toggleChat
+		case chatSettings
 		case removeStream
 		case changeQuality
 	}
@@ -22,9 +24,12 @@ struct StreamControlsOverlay: View {
 	let streamQualities: [StreamQuality]
 	let isAudioOnly: Bool
 	let isFlipped: Bool
+	let isChatEnabled: Bool
 	let addStream: () -> Void
 	let toggleVideo: () -> Void
 	let toggleFlip: () -> Void
+	let toggleChat: () -> Void
+	let openChatSettings: () -> Void
 	let removeStream: () -> Void
 	let changeQuality: (_ newQuality: StreamQuality) -> Void
 	let dismiss: () -> Void
@@ -49,6 +54,12 @@ struct StreamControlsOverlay: View {
 				Spacer(minLength: 24)
 
 				HStack(spacing: 18) {
+					iconButton(
+						systemImage: "bubble.left.and.bubble.right",
+						control: .toggleChat,
+						isDimmed: isChatEnabled == false,
+						action: toggleChat
+					)
 					iconButton(
 						systemImage: isAudioOnly ? "eye" : "eye.slash",
 						control: .toggleVideo,
@@ -85,6 +96,12 @@ struct StreamControlsOverlay: View {
 				}
 
 				Spacer(minLength: 24)
+
+				pillButton(
+					title: "Chat Settings",
+					control: .chatSettings,
+					action: openChatSettings
+				)
 
 				pillButton(
 					title: "Add Stream",
@@ -163,7 +180,7 @@ struct StreamControlsOverlay: View {
 			.onExitCommand(perform: dismiss)
 	}
 
-	private func iconButton(systemImage: String, control: Control, action: @escaping () -> Void) -> some View {
+	private func iconButton(systemImage: String, control: Control, isDimmed: Bool = false, action: @escaping () -> Void) -> some View {
 		Image(systemName: systemImage)
 			.font(.system(size: 25, weight: .semibold))
 			.frame(width: 62, height: 62)
@@ -172,10 +189,10 @@ struct StreamControlsOverlay: View {
 			.focusable(true, interactions: .activate)
 			.focused($focusedControl, equals: control)
 			.prefersDefaultFocus(control == .addStream, in: controlsFocusNamespace)
-			.foregroundStyle(iconForeground(for: control))
+			.foregroundStyle(iconForeground(for: control, isDimmed: isDimmed))
 			.background {
 				Circle()
-					.fill(iconBackground(for: control))
+					.fill(iconBackground(for: control, isDimmed: isDimmed))
 			}
 			.scaleEffect(focusedControl == control ? 1.12 : 1)
 			.shadow(color: .black.opacity(focusedControl == control ? 0.4 : 0.22), radius: focusedControl == control ? 18 : 8, y: 8)
@@ -184,18 +201,18 @@ struct StreamControlsOverlay: View {
 			.onExitCommand(perform: dismiss)
 	}
 
-	private func iconBackground(for control: Control) -> Color {
+	private func iconBackground(for control: Control, isDimmed: Bool = false) -> Color {
 		if focusedControl == control {
 			return control == .removeStream ? .red.opacity(0.92) : .white.opacity(0.96)
 		}
-		return .white.opacity(0.18)
+		return .white.opacity(isDimmed ? 0.08 : 0.18)
 	}
 
-	private func iconForeground(for control: Control) -> Color {
+	private func iconForeground(for control: Control, isDimmed: Bool = false) -> Color {
 		if focusedControl == control {
 			return control == .removeStream ? .white : .black
 		}
-		return .white
+		return .white.opacity(isDimmed ? 0.38 : 1)
 	}
 
 	private func moveFocus(_ direction: MoveCommandDirection) {
@@ -203,13 +220,13 @@ struct StreamControlsOverlay: View {
 
 		switch direction {
 		case .up:
-			if focusedControl == .addStream {
+			if focusedControl == .addStream || focusedControl == .chatSettings {
 				target = .toggleVideo
 			} else {
 				target = nil
 			}
 		case .down:
-			if focusedControl != .addStream {
+			if focusedControl != .addStream && focusedControl != .chatSettings {
 				target = .addStream
 			} else {
 				target = nil

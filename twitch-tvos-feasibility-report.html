@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feasibility Report — Twitch HLS Client for Apple TV</title>
+<style>
+  :root {
+    --bg: #0e0e12;
+    --panel: #17171e;
+    --panel2: #1e1e28;
+    --border: #2a2a38;
+    --text: #e8e6f0;
+    --muted: #9b97ab;
+    --purple: #9146ff;
+    --purple-soft: #b889ff;
+    --green: #3ddc84;
+    --amber: #ffb545;
+    --red: #ff5c6c;
+    --blue: #4da3ff;
+    --code-bg: #101018;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 28px 80px; }
+  header.hero {
+    background: linear-gradient(160deg, #1a1030 0%, #0e0e12 70%);
+    border-bottom: 1px solid var(--border);
+    padding: 56px 28px 40px;
+  }
+  .hero-inner { max-width: 1100px; margin: 0 auto; }
+  .hero .kicker {
+    color: var(--purple-soft);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .hero h1 { font-size: 34px; line-height: 1.2; font-weight: 800; }
+  .hero .sub { color: var(--muted); margin-top: 12px; max-width: 800px; }
+  .hero .meta { margin-top: 18px; color: var(--muted); font-size: 13px; }
+  .verdict {
+    margin-top: 26px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 10px;
+    padding: 14px 18px;
+    min-width: 220px;
+    flex: 1;
+  }
+  .badge .t { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); font-weight: 700; }
+  .badge .v { font-size: 19px; font-weight: 700; margin-top: 4px; }
+  .badge .d { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .badge.rec { border-color: var(--purple); background: linear-gradient(180deg, #241539, var(--panel)); }
+  nav.toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin: -22px auto 40px;
+    max-width: 1100px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    font-size: 14px;
+  }
+  nav.toc a { color: var(--purple-soft); text-decoration: none; }
+  nav.toc a:hover { text-decoration: underline; }
+  section { margin: 52px 0; }
+  h2 {
+    font-size: 24px;
+    font-weight: 800;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--purple);
+    margin-bottom: 22px;
+  }
+  h2 .num { color: var(--purple-soft); margin-right: 10px; }
+  h3 { font-size: 18px; font-weight: 700; margin: 26px 0 10px; }
+  p { margin: 10px 0; }
+  ul.plain { margin: 10px 0 10px 22px; }
+  ul.plain li { margin: 6px 0; }
+  a { color: var(--purple-soft); }
+  code {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 13px;
+    color: #d7c9ff;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 14px 0;
+  }
+  pre code { background: none; border: none; padding: 0; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin: 16px 0;
+  }
+  .panel.callout { border-left: 4px solid var(--purple); }
+  .panel.warn { border-left: 4px solid var(--amber); }
+  .panel.danger { border-left: 4px solid var(--red); }
+  .panel.good { border-left: 4px solid var(--green); }
+  .panel .pt { font-weight: 700; margin-bottom: 6px; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14.5px; }
+  th {
+    text-align: left;
+    background: var(--panel2);
+    color: var(--purple-soft);
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+  }
+  td { padding: 10px 12px; border: 1px solid var(--border); vertical-align: top; }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .pill {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 2px 10px;
+    letter-spacing: .3px;
+    white-space: nowrap;
+  }
+  .pill.ok   { background: rgba(61,220,132,.14); color: var(--green); }
+  .pill.mid  { background: rgba(255,181,69,.14); color: var(--amber); }
+  .pill.bad  { background: rgba(255,92,110,.14); color: var(--red); }
+  .pill.info { background: rgba(77,163,255,.14); color: var(--blue); }
+  .pill.pp   { background: rgba(145,70,255,.18); color: var(--purple-soft); }
+  .flow {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; margin: 18px 0;
+  }
+  .flow .node {
+    flex: 1; min-width: 150px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    position: relative;
+  }
+  .flow .node b { display: block; color: var(--purple-soft); font-size: 13.5px; }
+  .flow .arrow {
+    align-self: center; color: var(--muted); font-size: 20px; min-width: auto; flex: 0;
+    background: none; border: none; padding: 0;
+  }
+  .effort { margin: 8px 0; }
+  .effort .label { display: flex; justify-content: space-between; font-size: 13.5px; margin-bottom: 4px; }
+  .effort .bar { height: 10px; background: var(--panel2); border-radius: 999px; overflow: hidden; border: 1px solid var(--border); }
+  .effort .fill { height: 100%; border-radius: 999px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
+  .small { font-size: 13px; color: var(--muted); }
+  .srcnote { font-size: 12.5px; color: var(--muted); }
+  footer { margin-top: 70px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
+  .kbd {
+    font-family: inherit; font-size: 12px; border: 1px solid var(--border);
+    border-bottom-width: 2px; border-radius: 5px; padding: 1px 6px; background: var(--panel2);
+  }
+  @media print {
+    body { background: #fff; color: #111; }
+    .panel, pre, td, th { background: #fff; border-color: #ccc; }
+    code { background: #f4f4f8; color: #4b2e83; }
+    a { color: #6a2fd0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="kicker">Technical Feasibility Assessment</div>
+    <h1>Recreating the Samsung TV Twitch HLS Client as an Apple TV (tvOS) App</h1>
+    <p class="sub">
+      Evaluating two paths: (A) repackaging the existing web-based <code>smarttv-twitch-hls</code> app
+      into an Apple TV app bundle, versus (B) building a native tvOS client in Swift.
+      Personal-use scope — self-signed, no App Store deployment.
+    </p>
+    <div class="meta">Prepared: September 13, 2026 &nbsp;·&nbsp; Source repo: JustTryingAI/smarttv-twitch-hls (fork of fgl27/smarttv-twitch / SmartTwitchTV family) &nbsp;·&nbsp; Target: Apple TV 4K, tvOS 17+</div>
+    <div class="verdict">
+      <div class="badge rec">
+        <div class="t">Recommendation</div>
+        <div class="v">Build native (SwiftUI + AVPlayer)</div>
+        <div class="d">or bootstrap from the GPL <em>Byte</em> tvOS client</div>
+      </div>
+      <div class="badge">
+        <div class="t">Option A — Repackage web app</div>
+        <div class="v"><span class="pill mid">Feasible, degraded</span></div>
+        <div class="d">hls.js cannot run on tvOS — the fork's core feature is unportable into a WebView</div>
+      </div>
+      <div class="badge">
+        <div class="t">Option B — Native</div>
+        <div class="v"><span class="pill ok">Strongly feasible</span></div>
+        <div class="d">MVP playable stream in days; full parity in weeks</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#summary">1. Summary</a>
+  <a href="#incumbent">2. The Incumbent App</a>
+  <a href="#platform">3. tvOS Ground Truth</a>
+  <a href="#optionA">4. Option A — Repackage</a>
+  <a href="#optionB">5. Option B — Native</a>
+  <a href="#optionBprime">6. Option B′ — Fork Byte</a>
+  <a href="#compare">7. Comparison</a>
+  <a href="#recommendation">8. Recommendation &amp; Roadmap</a>
+  <a href="#risks">9. Risks &amp; Legal</a>
+  <a href="#appendix">10. Sources</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ================= 1 SUMMARY ================= -->
+<section id="summary">
+  <h2><span class="num">1</span>Executive Summary</h2>
+  <p>
+    The Samsung app you use is a <strong>Tizen web application</strong> — roughly
+    <strong>1.4&nbsp;MB of JavaScript across ~24 modules</strong> — whose central engineering problem was
+    <em>making Twitch's modern HLS streams playable on weak TV hardware</em>. It achieves this by
+    running <code>hls.js</code>, a JavaScript HLS implementation that requires
+    <strong>Media Source Extensions (MSE)</strong> in the browser engine.
+  </p>
+  <p>
+    The single most important finding of this assessment: <strong>WebKit's source explicitly disables MSE
+    on Apple&nbsp;TV</strong> (<code>ENABLE_MEDIA_SOURCE</code> is excluded for
+    <code>PLATFORM(APPLETV)</code>). hls.js therefore <em>cannot</em> run inside a tvOS
+    <code>WKWebView</code>. Repackaging the existing app is technically possible, but only in a
+    degraded mode that discards exactly the capability this fork exists to provide — software HLS
+    playback of 1440p streams — while inheriting all of the Tizen-era UI and input coupling.
+  </p>
+  <p>
+    Meanwhile, the "hard part" of this app is trivial on Apple&nbsp;TV hardware: <code>AVPlayer</code>
+    natively plays Twitch's usher-generated HLS playlists (including 1440p60), with full 4K-class
+    hardware decode. A native SwiftUI client needs to rebuild only the shell — browse, chat, settings —
+    and the web app itself becomes a <em>reference specification</em> rather than code to port.
+    There are multiple working precedents, including a maintained SwiftUI tvOS Twitch client (<em>Byte</em>)
+    that already supports 1440p and multistream.
+  </p>
+  <div class="panel callout">
+    <div class="pt">Bottom line</div>
+    <p class="small">
+      Don't ship the web app to the Apple TV — it would be fighting the platform. A native
+      SwiftUI/AVPlayer app reaches a <em>better-than-parity</em> result (native 1440p, true multistream,
+      top-shelf integration, Siri Remote focus UI) for roughly 2–3 weeks of part-time effort to MVP.
+      If you want a faster start, fork the GPL-licensed <em>Byte</em> client and customize it; both are
+      far better uses of the Apple TV than a WKWebView shim.
+    </p>
+  </div>
+</section>
+
+<!-- ================= 2 INCUMBENT ================= -->
+<section id="incumbent">
+  <h2><span class="num">2</span>What the Samsung App Actually Is</h2>
+  <p>
+    <code>JustTryingAI/smarttv-twitch-hls</code> is a fork of the long-lived
+    <code>fgl27/smarttv-twitch</code> (SmartTwitchTV) family — a single-page web application
+    (HTML + vanilla JS, no framework) delivered as a Tizen widget for Samsung TVs (Tizen 2.3+),
+    with 4,481 commits of accumulated feature work. The fork's specific purpose is to play the
+    <em>newer HLS-format streams (including 1440p)</em> via <code>hls.js</code> where TVs' integrated
+    players fall short.
+  </p>
+
+  <h3>Codebase inventory (measured from the repo tree)</h3>
+  <table>
+    <tr><th>Area</th><th>Contents</th><th>Approx. size</th><th>Portability to tvOS</th></tr>
+    <tr>
+      <td><code>specific/</code> (18 files)</td>
+      <td>App logic: Play.js (130&nbsp;KB), PlayVod, PlayClip, ChatLive (+controls, VOD), Screens/ScreensObj (UI framework), Settings, Sidepannel, UserLiveFeed, Users, AddCode/AddUser (auth), Search, languages</td>
+      <td>~681&nbsp;KB</td>
+      <td><span class="pill mid">Reference only</span> — business logic is reusable as a spec; DOM code is not</td>
+    </tr>
+    <tr>
+      <td><code>thirdparty/</code></td>
+      <td><code>hls.js</code> (528&nbsp;KB), irc-message, punycode, twemoji, kapchat</td>
+      <td>~572&nbsp;KB</td>
+      <td><span class="pill bad">hls.js unportable</span> (MSE); IRC parser trivially replaceable; twemoji/punycode irrelevant</td>
+    </tr>
+    <tr>
+      <td><code>general/</code></td>
+      <td>TVKeyValue (Samsung remote codes), emojis, img64, resize</td>
+      <td>~88&nbsp;KB</td>
+      <td><span class="pill bad">Not portable</span> — Samsung-specific</td>
+    </tr>
+    <tr>
+      <td><code>languages/</code></td>
+      <td>en_US + default + strings</td>
+      <td>~48&nbsp;KB</td>
+      <td><span class="pill ok">Reusable as data</span> (strings for English UI)</td>
+    </tr>
+    <tr>
+      <td><code>index.html</code></td>
+      <td>Single-page shell + all screens' DOM, 104&nbsp;KB</td>
+      <td>~104&nbsp;KB</td>
+      <td><span class="pill bad">Not portable</span></td>
+    </tr>
+  </table>
+  <p class="small">Total ≈ 1.49&nbsp;MB of client code. License: GPL-3.0. Self-updating: the Tizen app downloads a fresh
+  <code>master.js</code> from GitHub Pages at launch (an auto-update path that also exists on tvOS WebViews, but you'd likely freeze it).</p>
+
+  <h3>How it acquires and plays a live stream (the part that matters)</h3>
+  <div class="flow">
+    <div class="node"><b>1. GQL token request</b><code>gql.twitch.tv</code> query returning <code>data.streamPlaybackAccessToken</code> (Play.js:711, 1245)</div>
+    <div class="arrow">→</div>
+    <div class="node"><b>2. usher playlist</b><code>usher.ttvnw.net/api/channel/hls/{channel}.m3u8</code> with <code>token</code> + <code>sig</code> (Play.js:1016)</div>
+    <div class="arrow">→</div>
+    <div class="node"><b>3. Variant selection</b>Master playlist → user-selected quality URL; hls.js for decode</div>
+    <div class="arrow">→</div>
+    <div class="node"><b>4. Playback</b>HTML5 <code>&lt;video&gt;</code> fed by hls.js/MSE; fallback to Samsung's <code>avplay</code> object</div>
+  </div>
+
+  <ul class="plain">
+    <li><strong>Player selection is runtime-switchable</strong> (<code>Play.js:209–335</code>): default = hls.js/MSE, alternate = native Tizen <code>avplay</code>. Quality switching by URL is already implemented for the native path — good sign for an AVPlayer port.</li>
+    <li><strong>Chat</strong> connects to Twitch IRC over WebSocket (<code>wss://irc-ws.chat.twitch.tv</code>) with a bundled <code>irc-message</code> parser; emotes via IRC tags + twemoji.</li>
+    <li><strong>Auth</strong> is an OAuth <em>authorization-code</em> flow: a GitHub Pages helper page authorizes against a registered client (<code>client_id=1mknxvmcmbynqcg2xvd1v2sydxfbjx</code>), shows the one-time code, the user types it into the TV (<code>AddCode.js</code>), and the app exchanges it — <strong>with the <code>client_secret</code> embedded client-side</strong> — at <code>id.twitch.tv/oauth2/token</code>. Scopes: <code>user:read:follows user:read:subscriptions chat:edit chat:read</code>.</li>
+    <li><strong>Tizen coupling is shallow</strong>: <code>webapis.appcommon.setScreenSaver</code>, <code>webapis.preview.setPreviewData</code>, <code>webapis.productinfo.getModel/getFirmware</code>, one legacy <code>avplay</code> reference, <code>TVKeyValue.js</code>, and Samsung key registration. Everything else is plain web APIs.</li>
+  </ul>
+</section>
+
+<!-- ================= 3 PLATFORM ================= -->
+<section id="platform">
+  <h2><span class="num">3</span>tvOS Ground Truth (verified)</h2>
+  <table>
+    <tr><th>Fact</th><th>Status</th><th>Evidence / implication</th></tr>
+    <tr>
+      <td><strong>MSE is disabled in tvOS WebKit</strong></td>
+      <td><span class="pill bad">Hard blocker for hls.js</span></td>
+      <td>
+        WebKit main, <code>Source/WTF/wtf/PlatformEnableCocoa.h:540</code>:
+        <code>#if !defined(ENABLE_MEDIA_SOURCE) &amp;&amp; !PLATFORM(MACCATALYST) &amp;&amp; !PLATFORM(WATCHOS) &amp;&amp; !PLATFORM(APPLETV)</code> → MSE enabled everywhere on Apple platforms <em>except</em> Catalyst/watchOS/tvOS.
+        <strong>hls.js cannot run in a tvOS WKWebView.</strong>
+      </td>
+    </tr>
+    <tr>
+      <td>WKWebView exists on tvOS</td>
+      <td><span class="pill ok">Yes</span></td>
+      <td>Usable for Option A, but it's a non-focusable black box: Siri Remote events never reach web content; you must intercept keys natively and re-inject them via <code>evaluateJavaScript</code>. JS dialogs (alert/confirm) are unreliable on tvOS. Text input into DOM fields must be bridged from a native field.</td>
+    </tr>
+    <tr>
+      <td>No official Twitch tvOS app</td>
+      <td><span class="pill info">Opportunity</span></td>
+      <td>iTunes Search API: the official Twitch app (<code>tv.twitch</code>, v31.1) lists zero Apple TV devices in <code>supportedDevices</code>. Nothing official to copy — or to block you.</td>
+    </tr>
+    <tr>
+      <td>AVPlayer plays Twitch HLS natively</td>
+      <td><span class="pill ok">Proven</span></td>
+      <td>Multiple tvOS clients exist: <code>notbenoit/tvOS-Twitch</code> (Swift), <code>jameseunson/twitchy</code> (ObjC, archived), <code>papertigers/Player2</code> (Swift), and the maintained SwiftUI client <code>kristianpennacchia/Byte</code> — which explicitly supports <strong>Twitch 1440p (2K) and unlimited multistream</strong> on tvOS.</td>
+    </tr>
+    <tr>
+      <td>Twitch stream acquisition works from any HTTP client</td>
+      <td><span class="pill ok">Same as Samsung app</span></td>
+      <td>GQL <code>PlaybackAccessToken</code> (public web Client-ID <code>kimne78kx3ncx6brgo4mv6wki5h1ko</code>, or your own) → usher m3u8 with <code>token</code>/<code>sig</code>. AVPlayer consumes the resulting URL directly; ads arrive as <code>EXT-X-DISCONTINUITY</code>/<code>DATERANGE</code> segments that AVFoundation plays (or that you can filter — see §5).</td>
+    </tr>
+    <tr>
+      <td>Chat is platform-neutral</td>
+      <td><span class="pill ok">Trivial</span></td>
+      <td><code>URLSessionWebSocketTask</code> → <code>wss://irc-ws.chat.twitch.tv:443</code>; anonymous via <code>justinfan*</code> nicks. Emote tags map to Twitch's emote CDN. Third-party emotes (BTTV/7TV/FFZ) are plain JSON APIs.</td>
+    </tr>
+    <tr>
+      <td>Self-signing &amp; deployment</td>
+      <td><span class="pill ok">Simple</span></td>
+      <td>Xcode + Apple ID: install directly over USB/network to your Apple TV. Free account: app expires after 7 days (re-sign weekly), 10 App IDs/week. Paid program ($99/yr): dev profiles last ~1 year, zero friction for a personal device. No App Store, no review, no special entitlements needed.</td>
+    </tr>
+    <tr>
+      <td>No browser/login surfaces on tvOS</td>
+      <td><span class="pill mid">Design around it</span></td>
+      <td>No <code>SFSafariViewController</code>/<code>ASWebAuthenticationSession</code> on tvOS. Use Twitch's <strong>Device Authorization Grant</strong> (enter a short code at twitch.tv/activate from any phone/PC — documented Twitch flow), or paste a token. Never embed the Samsung app's <code>client_secret</code> approach in a new build.</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ================= 4 OPTION A ================= -->
+<section id="optionA">
+  <h2><span class="num">4</span>Option A — Repackage the Web App in a tvOS Shell</h2>
+  <p><strong>Concept:</strong> a thin SwiftUI/UIKit tvOS app hosting a <code>WKWebView</code> that loads the bundled
+  <code>app/</code> folder, with native bridges for remote keys and text entry.</p>
+
+  <h3>What immediately breaks</h3>
+  <div class="panel warn">
+    <div class="pt">hls.js is dead on arrival (no MSE)</div>
+    <p class="small">
+      The fork's defining feature — software HLS decode of 1440p streams via hls.js — cannot execute,
+      because tvOS WebKit doesn't implement Media Source Extensions. The app's own player-selection
+      logic (<code>Play_HlsSupported = Hls.isSupported() &amp;&amp; Hls.isMSESupported()</code>, Play.js:218)
+      would fail its capability check and drop to the <em>native fallback path</em> — which in this codebase
+      means the Tizen <code>avplay</code> object, itself a Samsung-only API.
+    </p>
+    <p class="small">
+      Salvage path: patch <code>Play.js</code> so the fallback uses a plain
+      <code>&lt;video src="{usher m3u8 URL}"&gt;</code>, letting Apple's native HLS stack do the work
+      (the codebase already has URL-based quality switching for its native path, so this is a bounded edit,
+      and it's legal under GPL since you're keeping it private).
+    </p>
+  </div>
+
+  <h3>The bridge layer you'd have to build</h3>
+  <table>
+    <tr><th>Concern</th><th>Work required</th><th>Risk</th></tr>
+    <tr>
+      <td>Remote → app input</td>
+      <td>Native focus/press handling on a hosting view; map Siri Remote presses to synthetic <code>KeyboardEvent</code>s (the app keys off Samsung <code>KEY_*</code> codes; you'd remap to its internal codes) injected with <code>evaluateJavaScript</code>.</td>
+      <td><span class="pill mid">Medium</span> fiddly but mechanical; the app's input model is already code-based</td>
+    </tr>
+    <tr>
+      <td>Text entry (search, tokens)</td>
+      <td>Native tvOS text field → <code>evaluateJavaScript</code> to set the DOM value and fire events; the Samsung system keyboard feature doesn't exist on tvOS.</td>
+      <td><span class="pill mid">Medium</span></td>
+    </tr>
+    <tr>
+      <td>Playback pipeline</td>
+      <td>Disable hls.js; rewrite the native-player branch to a bare <code>&lt;video&gt;</code> with the usher URL + query params; re-verify ad behavior, live-edge seeking, and reconnects through WebKit's HLS stack.</td>
+      <td><span class="pill mid">Medium</span> — this is the core of the app; every feature touches Play.js</td>
+    </tr>
+    <tr>
+      <td>Player capabilities</td>
+      <td>WebKit's <code>&lt;video&gt;</code> exposes no quality-selection API; you switch by re-loading a different variant URL (fine), lose hls.js buffer/latency controls (real regression), and lose any hls.js-level ad logic.</td>
+      <td><span class="pill mid">Medium</span></td>
+    </tr>
+    <tr>
+      <td>Persistence &amp; updates</td>
+      <td><code>localStorage</code> works in WKWebView. The self-updating loader can be left pointing at GitHub Pages or frozen.</td>
+      <td><span class="pill ok">Low</span></td>
+    </tr>
+    <tr>
+      <td>Rendering/perf</td>
+      <td>The UI is a 2015-era DOM app with timers and large image grids; on an A12+ Apple TV it will run, but focus-driven navigation will never feel native.</td>
+      <td><span class="pill ok">Low–medium</span></td>
+    </tr>
+  </table>
+
+  <h3>Effort estimate (Option A)</h3>
+  <div class="effort"><div class="label"><span>First watchable stream (shell + patched native playback)</span><span>~1 week part-time</span></div><div class="bar"><div class="fill" style="width:35%; background:var(--amber)"></div></div></div>
+  <div class="effort"><div class="label"><span>Acceptable daily-driver (key bridge, search, settings, quality)</span><span>~2–4 weeks part-time</span></div><div class="bar"><div class="bar" style="height:0"></div><div class="fill" style="width:60%; background:var(--amber)"></div></div></div>
+  <div class="effort"><div class="label"><span>Ongoing tax</span><span>High — every upstream fix must be hand-merged into Samsung-era code</span></div><div class="bar"><div class="fill" style="width:75%; background:var(--red)"></div></div></div>
+
+  <div class="panel danger">
+    <div class="pt">Verdict on Option A</div>
+    <p class="small">Technically possible, genuinely working end state is <em>degraded</em>: you'd lose the exact
+    capability (hls.js) the fork was created for, keep the Samsung-flavored UI, and accept input latency and
+    maintenance drag. The only real argument for it is maximal feature parity on day one (VODs, clips, chat,
+    follow feeds all come along) — but you'd be porting a Tizen widget to a platform where its architecture buys you nothing.</p>
+  </div>
+</section>
+
+<!-- ================= 5 OPTION B ================= -->
+<section id="optionB">
+  <h2><span class="num">5</span>Option B — Native tvOS Client (SwiftUI + AVPlayer)</h2>
+  <p><strong>Architecture:</strong> SwiftUI (focus-engine-native) + <code>AVPlayer</code>/<code>AVPlayerViewController</code>
+  + Twitch GQL/usher + IRC-over-WebSocket. No third-party player library required — Twitch serves plain,
+  undrm'd HLS that tvOS decodes in hardware.</p>
+
+  <h3>Module-by-module mapping from the Samsung app</h3>
+  <table>
+    <tr><th>Samsung app feature</th><th>Native equivalent</th><th>Difficulty</th></tr>
+    <tr><td>hls.js playback + quality menu</td><td>Feed usher master-playlist URL to <code>AVPlayer</code>; select qualities via <code>AVMediaSelectionGroup</code>/custom variant menu. 1440p60 plays in hardware — <em>better</em> than the Tizen result.</td><td><span class="pill ok">Easy</span></td></tr>
+    <tr><td>GQL token + usher URL construction</td><td>Port ~50 lines: GQL request → <code>streamPlaybackAccessToken</code> → build URL. Use the public web Client-ID or your own registered app (free).</td><td><span class="pill ok">Easy</span></td></tr>
+    <tr><td>Live chat overlay + send</td><td><code>URLSessionWebSocketTask</code> to IRC; render tags; write via <code>PRIVMSG</code> with your OAuth token; system tvOS text input for composing.</td><td><span class="pill ok">Easy–medium</span></td></tr>
+    <tr><td>Follows / browse / featured / search</td><td>Helix REST (<code>Get Followed Streams</code>, search, games) with device-grant token; SwiftUI lazy grids with native focus.</td><td><span class="pill ok">Easy–medium</span></td></tr>
+    <tr><td>VODs + VOD chat replay</td><td>GQL <code>vodPlaybackToken</code>-style flow (same shape as live) + chat from GQL video-combat endpoints; <code>AVPlayer</code> seeking works out of the box.</td><td><span class="pill mid">Medium</span></td></tr>
+    <tr><td>Clips</td><td>Clip playlist/token endpoints (same usher-style pattern); or defer to phase 2.</td><td><span class="pill mid">Medium</span></td></tr>
+    <tr><td>Multi-account, add-user/code flows</td><td>Twitch <strong>Device Authorization Grant</strong>: app shows code → you activate at twitch.tv/activate on phone/PC. No TV keyboard, no embedded secret. (Keep the manual token paste as backup.)</td><td><span class="pill ok">Easy</span></td></tr>
+    <tr><td>Settings, languages, emotes</td><td>SwiftUI settings; reuse the repo's <code>en_US</code> strings if desired; emote rendering from IRC <code>emotes</code> tag + Twitch CDN (and optional BTTV/7TV).</td><td><span class="pill ok">Easy</span></td></tr>
+    <tr><td>Ad handling (web app ships ad-management options)</td><td>Baseline: let stitched ads play (AVPlayer handles the discontinuities). Optional phase: <code>AVAssetResourceLoaderDelegate</code> intercepts variant playlists and strips segments tagged as stitched-ad <code>DATERANGE</code>s (the same playlist-level technique Streamlink uses). Fiddly but well-trodden; not required for v1.</td><td><span class="pill mid">Medium (optional)</span></td></tr>
+    <tr><td>Screen saver suppression, TV model quirks</td><td>Not needed — tvOS manages idle display behavior.</td><td><span class="pill ok">N/A</span></td></tr>
+  </table>
+
+  <h3>Core playback flow (native, ~100 lines total)</h3>
+<pre><code>// 1) Token (GQL, anonymous-capable with the public web Client-ID)
+POST https://gql.twitch.tv/gql
+{
+  "operationName": "PlaybackAccessToken",
+  "extensions": { "persistedQuery": { "version": 1, "sha256Hash": "&lt;known hash&gt;" } },
+  "variables": { "isLive": true, "login": "channelname",
+                 "isVod": false, "vodID": "", "playerType": "web",
+                 "platform": "web" }
+}
+// → data.streamPlaybackAccessToken { value (token), signature }
+
+// 2) Playlist
+https://usher.ttvnw.net/api/channel/hls/{channel}.m3u8
+  ?token={token}&amp;sig={signature}&amp;allow_source=true&amp;...&amp;platform=web&amp;player=...
+
+// 3) AVPlayer
+let item = AVPlayerItem(url: usherURL)          // master playlist
+let player = AVPlayer(playerItem: item)
+player.play()                                    // 1440p60 on Apple TV 4K: hardware decode
+
+// Quality: read item.avAsset().variantQualities? → or use
+// AVMediaSelectionGroup / custom master-playlist parsing for a native quality menu.</code></pre>
+
+  <div class="panel callout">
+    <div class="pt">Bonus capabilities you can't get on the Samsung app</div>
+    <ul class="plain small">
+      <li><strong>Multistream:</strong> AVFoundation has no player-count limit — <em>Byte</em> demonstrates unlimited simultaneous streams on tvOS. The Samsung README explicitly says Tizen can't support multiple players.</li>
+      <li><strong>Top Shelf</strong> content (followed-live tiles) and native player HUD polish.</li>
+      <li><strong>LL-HLS:</strong> tvOS 15+ AVFoundation supports low-latency HLS natively if you opt into Twitch's lower-latency playlist behavior.</li>
+      <li><strong>Reliability:</strong> WebKit/MSE/TV-keyboard quirks disappear; the only moving parts are Twitch's undocumented endpoints (same risk either way).</li>
+    </ul>
+  </div>
+
+  <h3>Effort estimate (Option B)</h3>
+  <div class="effort"><div class="label"><span>Spike: play a live stream via usher URL in AVPlayer</span><span>0.5–1 day</span></div><div class="bar"><div class="fill" style="width:10%; background:var(--green)"></div></div></div>
+  <div class="effort"><div class="label"><span>MVP: channel entry + quality + favorites + chat overlay + device auth</span><span>~2–3 weeks part-time</span></div><div class="bar"><div class="fill" style="width:40%; background:var(--green)"></div></div></div>
+  <div class="effort"><div class="label"><span>Parity-ish: browse/search/games + VODs + clips + settings polish</span><span>~4–8 weeks part-time</span></div><div class="bar"><div class="fill" style="width:65%; background:var(--green)"></div></div></div>
+</section>
+
+<!-- ================= 6 BYTE ================= -->
+<section id="optionBprime">
+  <h2><span class="num">6</span>Option B′ — Bootstrap from <em>Byte</em> (GPL-3.0)</h2>
+  <p>
+    <a href="https://github.com/kristianpennacchia/Byte">kristianpennacchia/Byte</a> is an unofficial
+    <strong>Twitch (and YouTube) tvOS client built with SwiftUI</strong>, maintained as recently as June 2026,
+    GPL-3.0, built-from-source (exactly your distribution model). It already ships:
+  </p>
+  <ul class="plain">
+    <li>Live streams + VODs, <strong>1440p (2K) Twitch playback</strong></li>
+    <li><strong>Unlimited multistream</strong> via the ⏯ remote button</li>
+    <li>Follows/subscriptions listing, spoiler filtering, clickpad player options</li>
+    <li>OAuth sign-in flow in-app (or pre-supplied tokens via a <code>Secrets.json</code>)</li>
+    <li>Documented ad-skipping behavior when supplying a logged-in web user token</li>
+  </ul>
+  <div class="panel good">
+    <div class="pt">Why this matters</div>
+    <p class="small">
+      This is a working existence proof of Option B — and a candidate starting point. Fork it, provide your
+      own Client-ID/Secret per its instructions, strip YouTube if unwanted, and you have a working signed
+      tvOS Twitch client in days rather than weeks. Caveats: single-maintainer codebase (audit before you rely
+      on it), GPL-3.0 obligations apply only if you distribute (private sideloading is fine), and its UI/UX
+      is someone else's taste — but as a foundation or a cross-check it de-risks the native path substantially.
+    </p>
+  </div>
+</section>
+
+<!-- ================= 7 COMPARE ================= -->
+<section id="compare">
+  <h2><span class="num">7</span>Side-by-Side Comparison</h2>
+  <table>
+    <tr>
+      <th>Criterion</th>
+      <th>A. Repackage web app (WKWebView)</th>
+      <th>B. Native SwiftUI + AVPlayer</th>
+      <th>B′. Fork <em>Byte</em></th>
+    </tr>
+    <tr><td>Time to first watchable stream</td><td>~1 week</td><td>~1 day (spike)</td><td>~1 day</td></tr>
+    <tr><td>Time to daily-driver quality</td><td>2–4 weeks, degraded</td><td>2–3 weeks</td><td>Days–2 weeks</td></tr>
+    <tr><td>1440p / source-quality playback</td><td><span class="pill bad">No hls.js</span> → native fallback only, patched</td><td><span class="pill ok">Yes — hardware decode, better than Samsung</span></td><td><span class="pill ok">Yes (already works)</span></td></tr>
+    <tr><td>Quality control &amp; buffering knobs</td><td>Limited (no hls.js APIs)</td><td><span class="pill ok">Full AVFoundation control</span></td><td><span class="pill ok">Full</span></td></tr>
+    <tr><td>Ad handling</td><td>Whatever survives the patch</td><td><span class="pill mid">Ads play; optional resource-loader filtering</span></td><td><span class="pill mid">Sub-token ad-skip already documented</span></td></tr>
+    <tr><td>Siri Remote UX</td><td><span class="pill bad">Synthetic keyboard events, no focus engine</span></td><td><span class="pill ok">Native focus, system text input, top shelf</span></td><td><span class="pill ok">Native</span></td></tr>
+    <tr><td>Chat</td><td>Inherited (works)</td><td>~1–2 days to rebuild (IRC WS)</td><td>Varies (check repo)</td></tr>
+    <tr><td>Feature parity path (VODs, clips, multi-user)</td><td>Free but stale-risk</td><td>Incremental, you control scope</td><td>Partial; extend as needed</td></tr>
+    <tr><td>Maintenance (Twitch API churn)</td><td><span class="pill bad">High — merge Samsung-era patches forever</span></td><td><span class="pill ok">Low — small surface you own</span></td><td><span class="pill mid">Low–medium (upstream + your fork)</span></td></tr>
+    <tr><td>Platform risk (WebKit/WebView quirks)</td><td><span class="pill bad">High</span></td><td><span class="pill ok">Low</span></td><td><span class="pill ok">Low</span></td></tr>
+    <tr><td>License posture</td><td>GPL-3.0 (private use fine)</td><td>Clean room</td><td>GPL-3.0 (private use fine; keep license if you ever share)</td></tr>
+    <tr><td>Fun/future ceiling (multistream, PiP, top shelf)</td><td><span class="pill bad">None</span></td><td><span class="pill ok">Full</span></td><td><span class="pill ok">Full</span></td></tr>
+  </table>
+</section>
+
+<!-- ================= 8 RECOMMENDATION ================= -->
+<section id="recommendation">
+  <h2><span class="num">8</span>Recommendation &amp; Suggested Roadmap</h2>
+  <p><strong>Recommendation: Option B, with Option B′ as the accelerator.</strong> The web app's value was
+  overcoming weak TV hardware and poor TV browsers — neither problem exists on Apple TV. Rebuilding the shell
+  natively is the smaller total effort in expectation, produces a dramatically better remote-control
+  experience, and leaves you owning a small, hackable codebase.</p>
+
+  <h3>Phase plan (part-time pace)</h3>
+  <table>
+    <tr><th>Phase</th><th>Deliverable</th><th>Estimate</th></tr>
+    <tr><td><span class="pill pp">0 · Spike</span></td>
+      <td>Xcode tvOS project; hardcode a channel; GQL token → usher URL → <code>AVPlayer</code>. Confirms signing and 1440p playback on your device in the first session.</td>
+      <td>0.5–1 day</td></tr>
+    <tr><td><span class="pill pp">1 · MVP</span></td>
+      <td>Channel-name entry + favorites (persisted), quality menu, full-screen playback with native HUD, basic chat overlay (read-only), device-grant sign-in.</td>
+      <td>2–3 weeks</td></tr>
+    <tr><td><span class="pill pp">2 · Library</span></td>
+      <td>Followed-streams browse grid (Helix), search, game pages; live-edge auto-refresh; reconnect/backoff logic (the Samsung app's hard-won error handling is your reference spec).</td>
+      <td>+1–2 weeks</td></tr>
+    <tr><td><span class="pill pp">3 · Depth</span></td>
+      <td>VODs (+ VOD chat replay), clips, chat send, settings surface, optional multistream (trivial with AVFoundation), optional top shelf.</td>
+      <td>+2–4 weeks</td></tr>
+    <tr><td><span class="pill pp">4 · Optional</span></td>
+      <td>Ad handling via <code>AVAssetResourceLoaderDelegate</code> playlist filtering; BTTV/7TV emotes; low-latency mode.</td>
+      <td>As desired</td></tr>
+  </table>
+
+  <h3>Signing notes for your setup</h3>
+  <ul class="plain">
+    <li><strong>Free account:</strong> works, but apps expire in 7 days and need re-signing (Xcode cable-free network install); 10 App IDs/week cap. Fine for evaluation.</li>
+    <li><strong>Paid program ($99/yr):</strong> development-signed installs last ~1 year, no store review, no distribution obligations — the correct choice for a permanent personal app.</li>
+    <li>No App Store constraints apply: no review, no special entitlements, `tv.twitch`-style bundle naming irrelevant — pick any bundle ID.</li>
+  </ul>
+</section>
+
+<!-- ================= 9 RISKS ================= -->
+<section id="risks">
+  <h2><span class="num">9</span>Risks, Gotchas &amp; Legal Notes</h2>
+  <table>
+    <tr><th>Risk</th><th>Severity</th><th>Mitigation</th></tr>
+    <tr>
+      <td>Twitch's undocumented endpoints (GQL <code>PlaybackAccessToken</code>, usher) change without notice</td>
+      <td><span class="pill mid">Medium — identical for both options</span></td>
+      <td>This is the shared, unavoidable risk of any third-party client (the Samsung app survives it via constant community patches). Keep token acquisition isolated in one module; pin the request shape; watch Streamlink's twitch plugin as the canary.</td>
+    </tr>
+    <tr>
+      <td>Client-ID strategy: public web ID (<code>kimne78kx…</code>) vs your own registration</td>
+      <td><span class="pill info">Low</span></td>
+      <td>Register your own app at dev.twitch.tv (free). The web Client-ID works for anonymous playback tokens but is not contractually yours; a registered ID gives you your own auth identity (and Device Grant support).</td>
+    </tr>
+    <tr>
+      <td>Twitch ToS: unofficial clients</td>
+      <td><span class="pill info">Low in practice</span></td>
+      <td>An unmodified, private, non-distributed viewer client is the lowest-risk configuration possible; there is no app store, no distribution, no monetization. Avoid distributing binaries or the embedded-secret pattern the Samsung app uses.</td>
+    </tr>
+    <tr>
+      <td>Ads: stitched ads interrupt AVPlayer playback by design</td>
+      <td><span class="pill mid">Medium (quality-of-life)</span></td>
+      <td>v1: accept them. Later: playlist-level filtering via <code>AVAssetResourceLoaderDelegate</code> (custom URL scheme → intercept master/variant playlists → drop ad <code>DATERANGE</code> segments), the same approach Streamlink uses. Note this is a cat-and-mouse with Twitch, not a one-time fix.</td>
+    </tr>
+    <tr>
+      <td>Device-grant login friction vs token pasting</td>
+      <td><span class="pill info">Low</span></td>
+      <td>Implement both: device grant (primary, no TV typing) and manual token paste (fallback), mirroring the Samsung app's AddCode concept but without shipping a client secret.</td>
+    </tr>
+    <tr>
+      <td>VOD muted-segment gaps &amp; clip quirks</td>
+      <td><span class="pill info">Low</span></td>
+      <td>Known Twitch platform behavior (muted VOD segments, clip playlist shapes); the Samsung app's PlayVod/PlayClip modules document the workarounds — port the logic, not the code.</td>
+    </tr>
+    <tr>
+      <td>GPL-3.0 obligations</td>
+      <td><span class="pill info">Low</span></td>
+      <td>Private personal use triggers no distribution duties. If you ever share your fork (or build on <em>Byte</em>), keep it GPL-3.0. Reading <code>Play.js</code> to port <em>ideas</em> is fine; copying code into a non-GPL project isn't.</td>
+    </tr>
+    <tr>
+      <td>Signing/expiration surprises</td>
+      <td><span class="pill info">Low</span></td>
+      <td>Paid developer program removes the 7-day churn; otherwise calendar a weekly re-sign.</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ================= 10 APPENDIX ================= -->
+<section id="appendix">
+  <h2><span class="num">10</span>Appendix — Evidence &amp; Sources</h2>
+  <table>
+    <tr><th>Claim</th><th>Source</th></tr>
+    <tr>
+      <td>MSE disabled on AppleTV in WebKit</td>
+      <td>WebKit main branch, <code>Source/WTF/wtf/PlatformEnableCocoa.h</code> (lines ~540–542): <code>#if !defined(ENABLE_MEDIA_SOURCE) &amp;&amp; !PLATFORM(MACCATALYST) &amp;&amp; !PLATFORM(WATCHOS) &amp;&amp; !PLATFORM(APPLETV)</code> → <code>#define ENABLE_MEDIA_SOURCE 1</code> — i.e., enabled everywhere on Cocoa <em>except</em> tvOS/watchOS/Catalyst.</td>
+    </tr>
+    <tr>
+      <td>No official Twitch tvOS app</td>
+      <td>iTunes Search API (US): official Twitch app <code>tv.twitch</code> v31.1 — <code>supportedDevices</code> contains zero Apple TV devices; <code>appletvScreenshotUrls</code> empty.</td>
+    </tr>
+    <tr>
+      <td>hls.js as the fork's player; native fallback; token flow</td>
+      <td><code>app/specific/Play.js</code>: player selection &amp; <code>Hls.isMSESupported()</code> check (lines ~209–335); <code>usher.ttvnw.net/api/channel/hls/</code> base URL (line 1016); GQL <code>data.streamPlaybackAccessToken</code> parse (lines 711, 1245).</td>
+    </tr>
+    <tr>
+      <td>Auth flow &amp; embedded secret</td>
+      <td><code>release/githubio/login/twitch.js</code>: OAuth authorization-code via <code>client_id=1mknxvmcmbynqcg2xvd1v2sydxfbjx</code>, scopes <code>user:read:follows user:read:subscriptions chat:edit chat:read</code>; <code>app/specific/AddCode.js</code>: <code>oauth2/token</code> exchanges with client-side <code>client_secret</code>.</td>
+    </tr>
+    <tr>
+      <td>Tizen coupling surface</td>
+      <td><code>app/config.xml</code> privileges; <code>webapis.appcommon.setScreenSaver</code>, <code>webapis.preview.setPreviewData</code>, <code>webapis.productinfo.*</code>, single legacy <code>avplay</code> reference in Play.js; <code>general/TVKeyValue.js</code>.</td>
+    </tr>
+    <tr>
+      <td>tvOS native precedents</td>
+      <td>GitHub: <code>notbenoit/tvOS-Twitch</code> (Swift), <code>jameseunson/twitchy</code> (ObjC, archived), <code>papertigers/Player2</code> (Swift), <code>kristianpennacchia/Byte</code> (SwiftUI, maintained 2026; 1440p + multistream + OAuth + Secrets.json setup).</td>
+    </tr>
+    <tr>
+      <td>Device Authorization Grant</td>
+      <td>Twitch developer docs (authentication → device authorization grant): <code>POST id.twitch.tv/oauth2/device</code> → user activates at twitch.tv/activate → token exchange with <code>grant_type=urn:ietf:params:oauth:grant-type:device_code</code>. (Docs page blocked automated fetch during this assessment; flow is standard and widely used by TV clients.)</td>
+    </tr>
+    <tr>
+      <td>Ad playlist filtering technique</td>
+      <td>Streamlink Twitch plugin documentation (playlist-level ad handling, authenticated sub-token benefits); AVFoundation <code>AVAssetResourceLoaderDelegate</code> supports playlist interception on tvOS.</td>
+    </tr>
+    <tr>
+      <td>Code size metrics</td>
+      <td>Computed from GitHub git-tree API sizes: specific/ ≈ 681 KB; thirdparty/ ≈ 572 KB (hls.js 528 KB); general/ ≈ 88 KB; languages/ ≈ 48 KB; index.html 104 KB. Total ≈ 1.49 MB; 4,481 commits; GPL-3.0.</td>
+    </tr>
+  </table>
+
+  <div class="panel small" style="margin-top:24px">
+    <strong>Method note.</strong> Platform facts above were verified against primary sources where reachable
+    (WebKit source tree, iTunes Search API, the fork's source files at commit <code>b1d9475</code> tree).
+    Effort estimates assume an experienced developer new to tvOS, working part-time evenings/weekends,
+    and are calibrated against the scope of prior hobby tvOS Twitch clients.
+  </div>
+</section>
+
+<footer>
+  Feasibility report — Twitch HLS client for Apple TV · prepared for private, self-signed deployment · sources cited in Appendix
+</footer>
+
+</div>
+</body>
+</html>

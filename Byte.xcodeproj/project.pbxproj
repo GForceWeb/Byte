@@ -335,6 +335,30 @@
 		C1FEBCF628E4780C00903D16 /* QRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FEBCF528E4780C00903D16 /* QRCode.swift */; };
 		C1FEBCF728E4780C00903D16 /* QRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FEBCF528E4780C00903D16 /* QRCode.swift */; };
 		C1FEBCF828E4780C00903D16 /* QRCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FEBCF528E4780C00903D16 /* QRCode.swift */; };
+C1CA71B02FBF280000000001 /* ChatSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000001 /* ChatSettings.swift */; };
+		C1CA71B02FBF280000000002 /* ChatSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000001 /* ChatSettings.swift */; };
+		C1CA71B02FBF280000000003 /* ChatSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000001 /* ChatSettings.swift */; };
+		C1CA71B02FBF280000000004 /* ChatSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000004 /* ChatSettingsStore.swift */; };
+		C1CA71B02FBF280000000005 /* ChatSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000004 /* ChatSettingsStore.swift */; };
+		C1CA71B02FBF280000000006 /* ChatSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000004 /* ChatSettingsStore.swift */; };
+		C1CA71B02FBF280000000007 /* TwitchChatConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000007 /* TwitchChatConnection.swift */; };
+		C1CA71B02FBF280000000008 /* TwitchChatConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000007 /* TwitchChatConnection.swift */; };
+		C1CA71B02FBF280000000009 /* TwitchChatConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000007 /* TwitchChatConnection.swift */; };
+		C1CA71B02FBF28000000000A /* ChatOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF28000000000A /* ChatOverlayView.swift */; };
+		C1CA71B02FBF28000000000B /* ChatOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF28000000000A /* ChatOverlayView.swift */; };
+		C1CA71B02FBF28000000000C /* ChatOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF28000000000A /* ChatOverlayView.swift */; };
+		C1CA71B02FBF28000000000D /* ChatSettingsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF28000000000D /* ChatSettingsOverlay.swift */; };
+		C1CA71B02FBF28000000000E /* ChatSettingsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF28000000000D /* ChatSettingsOverlay.swift */; };
+		C1CA71B02FBF28000000000F /* ChatSettingsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF28000000000D /* ChatSettingsOverlay.swift */; };
+		C1CA71B02FBF280000000010 /* ChatEmote.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000010 /* ChatEmote.swift */; };
+		C1CA71B02FBF280000000011 /* ChatEmote.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000010 /* ChatEmote.swift */; };
+		C1CA71B02FBF280000000012 /* ChatEmote.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000010 /* ChatEmote.swift */; };
+		C1CA71B02FBF280000000013 /* ChatEmoteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000011 /* ChatEmoteCache.swift */; };
+		C1CA71B02FBF280000000014 /* ChatEmoteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000011 /* ChatEmoteCache.swift */; };
+		C1CA71B02FBF280000000015 /* ChatEmoteCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000011 /* ChatEmoteCache.swift */; };
+		C1CA71B02FBF280000000016 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000016 /* FlowLayout.swift */; };
+		C1CA71B02FBF280000000017 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000016 /* FlowLayout.swift */; };
+		C1CA71B02FBF280000000018 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA71A02FBF280000000016 /* FlowLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -516,6 +540,14 @@
 		C1FB01DD2317D8E100130981 /* StreamList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamList.swift; sourceTree = "<group>"; };
 		C1FEBCF128E4768600903D16 /* OAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuthView.swift; sourceTree = "<group>"; };
 		C1FEBCF528E4780C00903D16 /* QRCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCode.swift; sourceTree = "<group>"; };
+C1CA71A02FBF280000000001 /* ChatSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettings.swift; sourceTree = "<group>"; };
+		C1CA71A02FBF280000000004 /* ChatSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsStore.swift; sourceTree = "<group>"; };
+		C1CA71A02FBF280000000007 /* TwitchChatConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitchChatConnection.swift; sourceTree = "<group>"; };
+		C1CA71A02FBF28000000000A /* ChatOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatOverlayView.swift; sourceTree = "<group>"; };
+		C1CA71A02FBF28000000000D /* ChatSettingsOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatSettingsOverlay.swift; sourceTree = "<group>"; };
+		C1CA71A02FBF280000000010 /* ChatEmote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmote.swift; sourceTree = "<group>"; };
+		C1CA71A02FBF280000000011 /* ChatEmoteCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEmoteCache.swift; sourceTree = "<group>"; };
+		C1CA71A02FBF280000000016 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -702,6 +734,7 @@
 			isa = PBXGroup;
 			children = (
 				C133D57D23227617005015C8 /* APIError.swift */,
+				C1CA71A02FBF280000000007 /* TwitchChatConnection.swift */,
 				C1F6C4DA232A776A006EA1D5 /* LiveVideoFetcher.swift */,
 				C133D58123227626005015C8 /* LocalizedDecodingError.swift */,
 				C1AE3317231E89FD00FE0F99 /* TwitchAPI.swift */,
@@ -717,6 +750,9 @@
 		C1AE331B231E8A6600FE0F99 /* Supporting Views */ = {
 			isa = PBXGroup;
 			children = (
+				C1CA71A02FBF280000000016 /* FlowLayout.swift */,
+				C1CA71A02FBF28000000000A /* ChatOverlayView.swift */,
+				C1CA71A02FBF28000000000D /* ChatSettingsOverlay.swift */,
 				C129CDE82FBF27DD0037853F /* StreamControlsOverlay.swift */,
 				C1A75360249B8ED1005FB190 /* ActivityIndicator.swift */,
 				C1FB01DB2317D8A900130981 /* Avatar.swift */,
@@ -875,6 +911,10 @@
 			isa = PBXGroup;
 			children = (
 				C1591B7D2FCE8D1C00A738B0 /* StreamQuality.swift */,
+				C1CA71A02FBF280000000010 /* ChatEmote.swift */,
+				C1CA71A02FBF280000000011 /* ChatEmoteCache.swift */,
+				C1CA71A02FBF280000000001 /* ChatSettings.swift */,
+				C1CA71A02FBF280000000004 /* ChatSettingsStore.swift */,
 				C14D5B9628EA723E00351AC5 /* AppError.swift */,
 				C117E4FE233F672D0056811D /* AppState.swift */,
 				C1141885231936A60004C813 /* AvatarSize.swift */,
@@ -1281,6 +1321,14 @@
 				C17766F226C66DEA0085E848 /* Functions.swift in Sources */,
 				C16A7E0228E7FE0600509FFF /* HeartbeatActivityIndicator.swift in Sources */,
 				C129CDEB2FBF27DF0037853F /* StreamControlsOverlay.swift in Sources */,
+				C1CA71B02FBF280000000001 /* ChatSettings.swift in Sources */,
+				C1CA71B02FBF280000000004 /* ChatSettingsStore.swift in Sources */,
+				C1CA71B02FBF280000000007 /* TwitchChatConnection.swift in Sources */,
+				C1CA71B02FBF28000000000A /* ChatOverlayView.swift in Sources */,
+				C1CA71B02FBF28000000000D /* ChatSettingsOverlay.swift in Sources */,
+				C1CA71B02FBF280000000010 /* ChatEmote.swift in Sources */,
+				C1CA71B02FBF280000000013 /* ChatEmoteCache.swift in Sources */,
+				C1CA71B02FBF280000000016 /* FlowLayout.swift in Sources */,
 				C1C103EB232DCD8000267736 /* OnSelect.iOS.swift in Sources */,
 				C1FEBCF728E4780C00903D16 /* QRCode.swift in Sources */,
 				C17766EE26C65EA80085E848 /* VideoList.swift in Sources */,
@@ -1381,6 +1429,14 @@
 				C17A83F128EFF5AC00FCD74F /* Channelable.swift in Sources */,
 				C17766EB26C65A610085E848 /* VideoView.swift in Sources */,
 				C129CDE92FBF27DF0037853F /* StreamControlsOverlay.swift in Sources */,
+				C1CA71B02FBF280000000002 /* ChatSettings.swift in Sources */,
+				C1CA71B02FBF280000000005 /* ChatSettingsStore.swift in Sources */,
+				C1CA71B02FBF280000000008 /* TwitchChatConnection.swift in Sources */,
+				C1CA71B02FBF28000000000B /* ChatOverlayView.swift in Sources */,
+				C1CA71B02FBF28000000000E /* ChatSettingsOverlay.swift in Sources */,
+				C1CA71B02FBF280000000011 /* ChatEmote.swift in Sources */,
+				C1CA71B02FBF280000000014 /* ChatEmoteCache.swift in Sources */,
+				C1CA71B02FBF280000000017 /* FlowLayout.swift in Sources */,
 				C16A7E0F28E8199900509FFF /* YoutubeBroadcast.swift in Sources */,
 				C187790023195C23008CA61E /* CovertArtSize.swift in Sources */,
 				C1020DC62317EB0800FBFE16 /* Avatar.swift in Sources */,
@@ -1489,6 +1545,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				C129CDEA2FBF27DF0037853F /* StreamControlsOverlay.swift in Sources */,
+				C1CA71B02FBF280000000003 /* ChatSettings.swift in Sources */,
+				C1CA71B02FBF280000000006 /* ChatSettingsStore.swift in Sources */,
+				C1CA71B02FBF280000000009 /* TwitchChatConnection.swift in Sources */,
+				C1CA71B02FBF28000000000C /* ChatOverlayView.swift in Sources */,
+				C1CA71B02FBF28000000000F /* ChatSettingsOverlay.swift in Sources */,
+				C1CA71B02FBF280000000012 /* ChatEmote.swift in Sources */,
+				C1CA71B02FBF280000000015 /* ChatEmoteCache.swift in Sources */,
+				C1CA71B02FBF280000000018 /* FlowLayout.swift in Sources */,
 				C1B5AC6A232E299F001A502F /* ChannelView.swift in Sources */,
 				C129B70D232B88C500FDDA99 /* M3U8.swift in Sources */,
 				C14BCD4E2317FC8900F33A48 /* Stream.swift in Sources */,
@@ -2103,7 +2167,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Byte.app/Byte";
-				TVOS_DEPLOYMENT_TARGET = 13.0;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
 		};
@@ -2126,7 +2190,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Byte.app/Byte";
-				TVOS_DEPLOYMENT_TARGET = 13.0;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
 		};

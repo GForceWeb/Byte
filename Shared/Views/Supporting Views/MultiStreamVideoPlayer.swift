@@ -21,11 +21,14 @@ struct MultiStreamVideoPlayer: View {
 	@Environment(\.resetFocus) private var resetFocus
 
 	@StateObject private var streamViewModel = StreamViewModel()
+	@StateObject private var chatSettingsStore = ChatSettingsStore()
+	@StateObject private var chatEmoteCache = ChatEmoteCache()
 
 	@State private var showControlsOverlay = false
 	@State private var showStreamPicker = false
 	@State private var didDismissControlsOverlayWithExit = false
 	@State private var restoringSelectedStreamID: String?
+	@State private var chatSettingsStream: (any Streamable)?
 
 	@ObservedObject var store: StreamStore
 	@State var streams: [any Streamable]
@@ -101,6 +104,16 @@ struct MultiStreamVideoPlayer: View {
 							showControls(for: stream)
 						}
 
+						if chatSettingsStore.settings(for: stream.id).isEnabled, let twitchStream = stream as? Stream {
+							ChatOverlayView(
+								emoteCache: chatEmoteCache,
+								channelLogin: twitchStream.userLogin.isEmpty ? twitchStream.userName : twitchStream.userLogin,
+								twitchUserID: twitchStream.userId,
+								settings: chatSettingsStore.settings(for: stream.id),
+								windowScale: 1 / Double(columnCount)
+							)
+						}
+
 						if showControlsOverlay, isSelected(stream) {
 							StreamControlsOverlay(
 								stream: stream,
@@ -108,6 +121,7 @@ struct MultiStreamVideoPlayer: View {
 								streamQualities: streamViewModel.streamQuality[stream.id] ?? [],
 								isAudioOnly: isAudioOnly,
 								isFlipped: isFlipped,
+								isChatEnabled: chatSettingsStore.settings(for: stream.id).isEnabled,
 								addStream: {
 									hideControlsOverlay()
 									showStreamPicker = true
@@ -117,6 +131,13 @@ struct MultiStreamVideoPlayer: View {
 								},
 								toggleFlip: {
 									toggleFlippingVideo(for: stream)
+								},
+								toggleChat: {
+									toggleChat(for: stream)
+								},
+								openChatSettings: {
+									hideControlsOverlay()
+									chatSettingsStream = stream
 								},
 								removeStream: {
 									hideControlsOverlay()
@@ -166,6 +187,24 @@ struct MultiStreamVideoPlayer: View {
 				StreamPicker(store: store) { stream in
 					showStreamPicker = false
 					streams.append(stream)
+				}
+			}
+		)
+		.fullScreenCover(
+			isPresented: Binding(
+				get: { chatSettingsStream != nil },
+				set: { if $0 == false { chatSettingsStream = nil } }
+			),
+			onDismiss: {
+			},
+			content: {
+				if let chatSettingsStream {
+					ChatSettingsOverlay(
+						store: chatSettingsStore,
+						streamID: chatSettingsStream.id,
+						streamName: chatSettingsStream.displayName,
+						dismiss: { self.chatSettingsStream = nil }
+					)
 				}
 			}
 		)
@@ -232,6 +271,12 @@ private extension MultiStreamVideoPlayer {
 		} else {
 			audioOnlyStreams.append(stream)
 		}
+	}
+
+	func toggleChat(for stream: any Streamable) {
+		var settings = chatSettingsStore.settings(for: stream.id)
+		settings.isEnabled.toggle()
+		chatSettingsStore.update(settings, for: stream.id)
 	}
 
 	func toggleFlippingVideo(for stream: any Streamable) {
